@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+    <style>
+	html {
+		background: #404040;
+	}
+    </style>
+    <script type="text/javascript">  
+      function draw(geo_data) {
+        "use strict";
+        var margin = 75,
+            width = 1400 - margin,
+            height = 700 - margin;
+
+        var svg = d3.select("body")
+            .append("svg")
+            .attr("width", width + margin)
+            .attr("height", height + margin)
+            .append('g')
+            .attr('class', 'map');
+
+		//get projection function for mercator
+		var merc_projection = d3.geo.mercator()
+									.scale(150)//zoom 
+									.translate([width/1.9,height/1.25]);//centre
+
+        var path = d3.geo.path().projection(merc_projection);
+
+        var map = svg.selectAll('path')
+                     .data(geo_data.features)
+                     .enter()
+                     .append('path')
+                     .attr('d', path)
+                     .style('fill', 'white')
+                     .style('stroke', 'black')
+                     .style('stroke-width', 0.8);
+					 
+		// dictionary for country data
+		var scoresAndRanksByCountry = {};
+		
+		function plot(data) {
+		debugger;
+		};
+		
+		for(var data in geo_data) {
+			console.log(geo_data);
+		}
+
+
+// Build color scale
+var heatColours = d3.scaleOrdinal()
+  .range(["#00FF00", "#FF0000"]);
+  
+        d3.csv("2017.csv", function (d) {
+		
+		var countryData = new Object();	
+		countryData.happinessRank = +d['Happiness.Rank'];
+		countryData.happinessScore = +d['Happiness.Score'];
+		
+		scoresAndRanksByCountry[d['Country']] = countryData;
+
+		return d;
+		}, plot);
+		};
+      </script>
+  </head>
+<body>
+  <script type="text/javascript">
+  /*
+    Use D3 to load the GeoJSON file
+    */
+    
+d3.json("world_countries.json", draw);
+  </script>
+</body>
+</html>
